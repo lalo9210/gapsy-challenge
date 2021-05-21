@@ -1,0 +1,341 @@
+# Example YAML to get you started quickly.
+# Be aware that YAML has indentation based coping.
+# Code completion support is available so start typing for available options.
+swagger: "2.0"
+
+# This is your document metadata
+info:
+  version: "0.0.1"
+  title: API de Productos para venta
+  description: |
+   API para poder realizar operaciones CRUD sobre productos de catálogo
+ 
+schemes:
+  - https
+  - http
+
+basePath: /challenge/api/v1/productos
+
+paths:
+ /{idArticulo}:
+  get:
+    summary: Busqueda de producto
+    description: Búsqueda de producto por clave única
+    parameters:
+        - name: idArticulo
+          in: path
+          description: Clave única del producto
+          required: true
+          type: string
+    responses:
+        200:
+          description: Consulta exitosa de un producto
+          schema:
+              $ref: "#/definitions/productoGet"
+        404:
+          description: No existe la información
+          schema:
+           $ref: '#/definitions/ErrorResponse404'
+        400:
+          description: Entrada incorrecta
+          schema:
+           $ref: '#/definitions/ErrorResponse400'
+        500:
+          description: Error inesperado
+          schema:
+           $ref: '#/definitions/ErrorResponse500'
+  put:
+    summary: Actualizacion de producto
+    description: Actualizacion de producto
+    consumes:
+        - application/json
+    parameters:
+        - name: idArticulo
+          in: path
+          description: Clave única del producto
+          required: true
+          type: string
+        - name: Datos de entrada del producto
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/productoPut"
+    responses:
+        200:
+          description: Actualizacion exitosa de un producto
+          schema:
+              $ref: "#/definitions/productoActualizacionResponse"
+        400:
+          description: Entrada incorrecta
+          schema:
+           $ref: '#/definitions/ErrorResponse400'
+        404:
+          description: No existe la información
+          schema:
+           $ref: '#/definitions/ErrorResponse404'
+        500:
+          description: Error inesperado
+          schema:
+           $ref: '#/definitions/ErrorResponse500'
+  delete:
+    summary: Baja de productos
+    description: Baja de productos a nivel físico
+    parameters:
+        - name: idCliente
+          in: path
+          description: id unico del cliente
+          required: true
+          type: string
+    responses:
+        200:
+          description: Eliminacion exitosa de un cliente
+          schema:
+              $ref: "#/definitions/productoBorradoResponse"
+        400:
+          description: Entrada incorrecta
+          schema:
+           $ref: '#/definitions/ErrorResponse400'
+        404:
+          description: No existe la información
+          schema:
+           $ref: '#/definitions/ErrorResponse404'
+        500:
+          description: Error inesperado
+          schema:
+              $ref: '#/definitions/ErrorResponse500'
+  
+ /:
+  
+  post:
+    summary: Alta de producto
+    description: Alta de producto
+    consumes:
+        - application/json
+    parameters:
+        - in: body
+          name: Datos de entrada del producto
+          required: true
+          schema:
+            $ref: "#/definitions/productoPost"
+    responses:
+        201:
+          description: Creacion exitosa de un producto
+          schema:
+              $ref: "#/definitions/productoResponse"
+        400:
+          description: Entrada incorrecta
+          schema:
+           $ref: '#/definitions/ErrorResponse400'
+        500:
+          description: Error inesperado
+          schema:
+           $ref: '#/definitions/ErrorResponse500'
+
+
+definitions:
+  productoPost:
+    type: object
+    properties:
+      idArticulo:
+        type: string
+        description: Clave única del artículo
+        example: "SKU0000001"
+      nombre:
+        type: string
+        description: Nombre con el que se identifica el producto
+        example: "Libreta tipo francesa"
+      descripcion:
+        type: string
+        description: Descripción general del producto
+        example: "Libreta tipo francesa con pasta dura"
+      precio:
+        type: integer
+        description: Valor del producto en MXM
+        example: 10.00
+      modelo:
+        type: string
+        description: Modelo del producto
+        example: "Azul con pasta dura"
+
+  productoGet:
+    type: object
+    properties:
+      estatus:
+        type: string
+        description: Estatus de la operación
+        example: "[OK, NOK, ERROR]"
+      mensaje:
+        type: string
+        description: Descripcion del mensaje
+        example: "Operación realizada correctamente"
+      codigo:
+        type: string
+        description: Codigo de operacion para trazabilidad
+        example: "200"
+      resultado: 
+        type: object
+        description: Describe el detalle del objeto 
+        $ref: '#/definitions/productoDTO'
+
+  productoDTO:
+    type: object
+    properties:
+      idArticulo:
+        type: string
+        description: Clave única del artículo
+        example: "SKU0000001"
+      nombre:
+        type: string
+        description: Nombre con el que se identifica el producto
+        example: "Libreta tipo francesa"
+      descripcion:
+        type: string
+        description: Descripción general del producto
+        example: "Libreta tipo francesa con pasta dura"
+      precio:
+        type: integer
+        description: Valor del producto en MXM
+        example: 10.00
+      modelo:
+        type: string
+        description: Modelo del producto
+        example: "Azul con pasta dura"
+
+  productoPut:
+    type: object
+    properties:
+      descripcion:
+        type: string
+        description: Descripción general del producto
+        example: "Libreta tipo francesa con pasta dura"
+      modelo:
+        type: string
+        description: Modelo del producto
+        example: "Azul con pasta dura"
+        
+  productoResponse:
+    type: object
+    properties:
+      mensaje:
+        type: string
+        description: Descripcion del mensaje
+        example: "Operacion Exitosa"
+      codigo:
+        type: string
+        description: Codigo de operacion para trazabilidad
+        example: "201"
+      detalles: 
+        type: object
+        description: Describe la creacion del producto 
+        $ref: '#/definitions/productoDTO'
+  
+  productoActualizacionResponse:
+    type: object
+    properties:
+      estatus:
+        type: string
+        description: Estatus de la operación
+        example: "[OK, NOK, ERROR]"
+      mensaje:
+        type: string
+        description: Descripcion del mensaje
+        example: "El producto se ha actualizado exitosamente"
+      codigo:
+        type: string
+        description: Codigo de operacion para trazabilidad
+        example: "200"
+      resultado: 
+        type: object
+        description: Describe la actualizacion del producto 
+        $ref: '#/definitions/productoDTO'
+
+  productoBorradoResponse:
+    type: object
+    properties:
+      mensaje:
+        type: string
+        description: Descripcion del mensaje
+        example: "El producto se ha dado de baja exitosamente"
+      codigo:
+        type: string
+        description: Codigo de operacion para trazabilidad
+        example: "200"
+
+  ErrorResponse400:
+    type: object
+    properties:
+      codigo:
+        type: string
+        description: Código del error
+        example: "400.api-producto.7000"
+      mensaje:
+        type: string
+        description: Descripción del error
+        example: "Los datos del producto contienen caracteres invalidos"
+      informacion:
+        type: string
+        description: Informacion de como corregir el error o validacion
+        example: "Debes introducir correctamente los datos"
+      tracking: 
+        type: string
+        description: Número de rastreo de la operación
+        example: "98755343"
+                 
+  ErrorResponse500:
+    type: object
+    properties:
+      codigo:
+        type: string
+        description: Código del error
+        example: "500.api-producto.1200"
+      mensaje:
+        type: string
+        description: Descripción del error
+        example: "Error al realizar la operación."
+      informacion:
+        type: string
+        description: Informacion de como corregir el error o validacion
+        example: "Ocurrio un error inesperado, intentar nuevamente"
+      tracking: 
+        type: string
+        description: Número de rastreo de la operación
+        example: "22920181120162829642"
+            
+  ErrorResponse404:
+    type: object
+    properties:
+      codigo:
+        type: string
+        description: Código del error
+        example: "404.api-producto.1100"
+      mensaje:
+        type: string
+        description: Descripción del error
+        example: "No existe la información solicitada."
+      id:
+        type: string
+        description: Id de la entidad a buscar
+        example: "143"
+      descripcion:
+        type: array
+        items:
+          type: string
+          example: ""
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
